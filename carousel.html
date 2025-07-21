@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Atividade de Carousel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #imagens {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      min-height: 200px;
+    }
+
+    #imagens img {
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>CAROUSEL DA GÉSSICA</h1>
+  <p id="info"></p>
+
+  <div id="imagens"></div>
+
+  <button onclick="gerarImagensTag()" title="Gerar Tags">🔄</button>
+  <button onclick="voltarImagem()" title="Anterior">⬅️</button>
+  <button onclick="proximaImagem()" title="Próxima">➡️</button>
+  <button onclick="automatico()" id="btn_automatico" title="Play/Pause">▶️</button>
+
+  <br><br>
+
+  <input type="text" id="link" placeholder="Link da imagem" />
+  <button onclick="adicionar()">➕ Adicionar</button>
+
+  <br><br>
+
+  <input type="number" min="10" max="1000" id="largura" placeholder="Largura (px)" value="300" />
+  <input type="number" min="10" max="1000" id="altura" placeholder="Altura (px)" value="200" />
+  <input type="number" id="tempo" placeholder="Tempo (ms)" value="1000" min="100" />
+
+  <script>
+    const imagens = [
+      "https://www.nicelembrancinhas.com.br/image/cache/catalog/POLLY%20POCKET/POLLY%2001%20%20SITE-650x650.jpg",
+      "https://hips.hearstapps.com/hmg-prod/images/2023-barbiemovie-pinkwestern2-64b9800b9c013.jpg?crop=0.726xw:1.00xh;0.159xw,0&resize=640:*",
+      "https://www.rbsdirect.com.br/imagesrc/27481529.jpg?w=700"
+    ];
+
+    let index = 0;
+    let play = false;
+    let timeoutId = null;
+
+    function atualizarInfo() {
+      document.getElementById('info').textContent = `Slide ${index + 1} de ${imagens.length}`;
+    }
+
+    function gerarImagensTag() {
+      const largura = document.getElementById('largura').value || 300;
+      const altura = document.getElementById('altura').value || 200;
+      const imagem = imagens[index];
+
+      const imgTag = `<img src="${imagem}" width="${largura}" height="${altura}" />`;
+      document.getElementById('imagens').innerHTML = imgTag;
+
+      atualizarInfo();
+    }
+
+    function proximaImagem() {
+      index = (index + 1) % imagens.length;
+      gerarImagensTag();
+    }
+
+    function voltarImagem() {
+      index = (index - 1 + imagens.length) % imagens.length;
+      gerarImagensTag();
+    }
+
+    function adicionar() {
+      const link = document.getElementById('link').value.trim();
+      if (link) {
+        imagens.push(link);
+        document.getElementById('link').value = "";
+        atualizarInfo();
+      }
+    }
+
+    function automatico() {
+      play = !play;
+
+      const botao = document.getElementById('btn_automatico');
+      botao.textContent = play ? "⏸️" : "▶️";
+
+      if (play) {
+        iniciarSlide();
+      } else {
+        pararSlide();
+      }
+    }
+
+    function iniciarSlide() {
+      const tempo = parseInt(document.getElementById('tempo').value) || 1000;
+      timeoutId = setTimeout(function ciclo() {
+        proximaImagem();
+        if (play) {
+          timeoutId = setTimeout(ciclo, tempo);
+        }
+      }, tempo);
+    }
+
+    function pararSlide() {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+
+    gerarImagensTag();
+  </script>
+</body>
+</html>
